@@ -67,7 +67,7 @@ def followUserHelper(email1, email2):
     find(table="Users", id="email", value=email1)
     find(table="Users", id="email", value=email2)
     if email1 == email2:
-        raise Exception("User with email=" + email1 + " can't follow himself")
+        return 1
     result = Select('SELECT id FROM Followers WHERE follower = %s AND followee = %s', (email1, email2, ))
     if len(result) == 0:
         Update('INSERT INTO Followers (follower, followee) VALUES (%s, %s)', (email1, email2, ))
@@ -108,7 +108,7 @@ def unfollowUserHelper(email1, email2):
     if len(followers) != 0:
         Update('DELETE FROM Followers WHERE follower = %s AND followee = %s', (email1, email2, ))
     else:
-        raise Exception("No such following")
+        return 1
     return detailUserHelper(email1)
 
 #8

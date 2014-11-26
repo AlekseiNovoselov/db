@@ -95,10 +95,6 @@ def listThreadHelper(table, id, related, params):
     result = Select(query=select, params=parameters)
     threadArray= []
 
-    if u'forum' in related:
-            print("Forum in related HElper")
-    if u'user' in related:
-        print("User in related helper")
     for id in result:
         id = id[0]
         threadArray.append(detailsThreadHelper(thread=id, related=related))
@@ -162,7 +158,7 @@ def unsubscribeThreadHelper(user, thread):
 
     select = Select('select thread, user FROM Subscriptions WHERE user = %s AND thread = %s', (user, thread, ))
     if len(select) == 0:
-        raise Exception("user " + user + " does not subscribe thread #" + str(thread))
+        return 1
     Update('DELETE FROM Subscriptions WHERE user = %s AND thread = %s', (user, thread, ))
 
     answer = {

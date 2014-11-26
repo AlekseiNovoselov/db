@@ -40,11 +40,6 @@ def createPostHelper(date, thread, message, user, forum, optional):
 
     update = "UPDATE Threads SET posts = posts + 1 WHERE id = %s"
 
-
-    print("\n\n\n\n")
-    print(query)
-    print("\n\n\n\n")
-
     connection = connect()
     with connection:
         cursor = connection.cursor()
