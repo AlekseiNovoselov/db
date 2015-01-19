@@ -116,7 +116,7 @@ def openThreadHelper(thread):
 #7
 def removeThreadHelper(threadid):
     find(table="Threads", id="id", value=threadid)
-    Update("UPDATE Threads SET isDeleted = 1 WHERE id = %s", (threadid, ))
+    Update("UPDATE Threads SET isDeleted = 1, posts = 0 WHERE id = %s", (threadid, ))
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
     for postId in postsIds:
         Update("UPDATE Posts SET isDeleted = 1 WHERE id = %s",(postId, ))
@@ -128,8 +128,8 @@ def removeThreadHelper(threadid):
 #8
 def restoreThreadHelper(threadid):
     find(table="Threads", id="id", value=threadid)
-    Update("UPDATE Threads SET isDeleted = 0 WHERE id = %s", (threadid, ))
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
+    Update("UPDATE Threads SET isDeleted = 0, posts = %s WHERE id = %s", (len(postsIds), threadid, ))
     for postId in postsIds:
         Update("UPDATE Posts SET isDeleted = 0 WHERE id = %s",(postId, ))
     result = {

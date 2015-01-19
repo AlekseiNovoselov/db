@@ -8,39 +8,44 @@ def createPostHelper(date, thread, message, user, forum, optional):
     find(table="Forums", id="short_name", value=forum)
     find(table="Users", id="email", value=user)
     parentTmp = ""
+    print "here1 all Ok"
     if len(Select("SELECT Threads.id FROM Threads JOIN Forums ON Threads.forum = Forums.short_name "
                                 "WHERE Threads.forum = %s AND Threads.id = %s", (forum, thread, ))) == 0:
         raise Exception("no thread with id = " + thread + " in forum " + forum)
-    if "parent" in optional:
-        tmp = Select("SELECT Posts.id FROM Posts JOIN Threads ON Threads.id = Posts.thread "
-                             "WHERE Posts.id = %s AND Threads.id = %s", (optional["parent"], thread, ))
-        if len(tmp) == 0:
-            raise Exception("Cant find post with id = " + optional["parent"])
-        else:
-            parentTmp = str(tmp[0][0])
+    #print optional
+    #if "parent" in optional:
+    #    tmp = Select("SELECT Posts.id FROM Posts JOIN Threads ON Threads.id = Posts.thread "
+    #                         "WHERE Posts.id = %s AND Threads.id = %s", (optional["parent"], thread, ))
+    #    if len(tmp) == 0:
+    #        print "excetposon"
+    #        raise Exception("Cant find post with id = " + optional["parent"])
+    #    else:
+    #        parentTmp = str(tmp[0][0])
+    print "here2 all Ok"
     query = "INSERT INTO Posts (message, user, forum, thread, date"
     values = "(%s, %s, %s, %s, %s"
     parameters = [message, user, forum, thread, date]
-
+    print "lexaloris"
     for param in optional:
         query += ", "+param
         values += ", %s"
         parameters.append(optional[param])
 
-    query += ", mathPath"
-    values += ", %s"
-    a = Select("Select id from Forums where short_name = %s", (forum, ))
+    #query += ", mathPath"
+    #values += ", %s"
+    #a = Select("Select id from Forums where short_name = %s", (forum, ))
 
-    var = str(a[0][0]) + "." + str(thread)
-    if len(parentTmp) != 0:
-        var += "." + parentTmp
-    parameters.append(var)
+    #var = str(a[0][0]) + "." + str(thread)
+    #if len(parentTmp) != 0:
+    #    var += "." + parentTmp
+    #parameters.append(var)
 
     query += ") VALUES " + values + ")"
 
     update = "UPDATE Threads SET posts = posts + 1 WHERE id = %s"
 
     connection = connect()
+    print "cinnection"
     with connection:
         cursor = connection.cursor()
         try:
@@ -60,6 +65,7 @@ def createPostHelper(date, thread, message, user, forum, optional):
     del post["likes"]
     del post["parent"]
     del post["points"]
+    print "asll ok end"
     return post
 
 def postQueryHelper(id):

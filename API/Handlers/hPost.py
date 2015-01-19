@@ -6,6 +6,7 @@ from API.tools import requirePost, requireGet, getOptional, tryParam, getRelated
 #1
 @requirePost
 def createPost(request):
+    print "createPostLexaloris"
     try:
         requestData = json.loads(request.body)
     except Exception as e:
