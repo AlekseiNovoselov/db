@@ -1,7 +1,11 @@
 import MySQLdb
 
+db_connection = MySQLdb.connect(host='localhost', port=3306, db='myDB3',
+                         user='root', passwd='123',
+                         charset='utf8')
+
 def connect():
-     return MySQLdb.connect(host='localhost', port=3306, db='myDB1',
+     return MySQLdb.connect(host='localhost', port=3306, db='myDB3',
                          user='root', passwd='123',
                          charset='utf8')
 

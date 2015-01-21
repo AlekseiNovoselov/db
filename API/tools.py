@@ -78,7 +78,8 @@ def Update(query, params):
             id = cursor.lastrowid
         connection.close()
     except MySQLdb.Error:
-        raise MySQLdb.Error("Update error")
+        #raise MySQLdb.Error("Update error")
+        return -1
     return id
 
 def getParam(request):

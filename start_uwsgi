@@ -1,0 +1,1 @@
+uwsgi --socket mysite.sock --module Oppa.wsgi --chmod-socket=666
