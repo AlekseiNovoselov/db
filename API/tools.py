@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 import MySQLdb
 import json
-from API.connection import connect
+from API.connection import connect, db1
 
 def requirePost(func):
     def wrapper(request):
@@ -68,15 +68,16 @@ def tryParam(input, required):
 
 def Update(query, params):
     try:
-        connection = connect()
-        with connection:
-            cursor = connection.cursor()
-            connection.begin()
-            cursor.execute(query, params)
-            connection.commit()
-            cursor.close()
-            id = cursor.lastrowid
-        connection.close()
+        db1.execQuery(query, params)
+        #connection = connect()
+        #with connection:
+        #    cursor = connection.cursor()
+        #   connection.begin()
+        #   cursor.execute(query, params)
+        #    connection.commit()
+        #   cursor.close()
+        #    id = cursor.lastrowid
+        #connection.close()
     except MySQLdb.Error:
         #raise MySQLdb.Error("Update error")
         return -1
@@ -97,13 +98,14 @@ def getParamRelated(request, related):
 
 def Select(query, params):
     try:
-        connection = connect()
-        with connection:
-            cursor = connection.cursor()
-            cursor.execute(query, params)
-            result = cursor.fetchall()
-            cursor.close()
-        connection.close()
+        result = db1.execQuery(query, params)
+        #connection = connect()
+        #with connection:
+        #    cursor = connection.cursor()
+        #    cursor.execute(query, params)
+        #    result = cursor.fetchall()
+        #    cursor.close()
+        #connection.close()
     except MySQLdb.Error:
         raise MySQLdb.Error("Select error")
     return result
