@@ -1,6 +1,5 @@
 # coding=utf-8
 from API.tools import Select, Update, find
-from API.connection import connect
 from API.Handlers.dbConnection import eForum, eUser, eThread
 
 #1
@@ -8,6 +7,7 @@ def createPostHelper(date, thread, message, user, forum, optional):
     find(table="Threads", id="id", value=thread)
     find(table="Forums", id="short_name", value=forum)
     find(table="Users", id="email", value=user)
+    print "after find"
     query = "INSERT INTO Posts (message, user, forum, thread, date"
     values = "(%s, %s, %s, %s, %s"
     parameters = [message, user, forum, thread, date]
@@ -18,22 +18,8 @@ def createPostHelper(date, thread, message, user, forum, optional):
     query += ") VALUES " + values + ")"
     update = "UPDATE Threads SET posts = posts + 1 WHERE id = %s"
 
-    connection = connect()
-
-    with connection:
-        cursor = connection.cursor()
-        try:
-            connection.begin()
-            cursor.execute(update, (thread, ))
-            cursor.execute(query, parameters)
-            connection.commit()
-        except Exception as e:
-            connection.rollback()
-            raise Exception("Database error: " + e.message)
-        post_id = cursor.lastrowid
-        cursor.close()
-
-    connection.close()
+    Update(update, (thread, ))
+    post_id  = Update(query, parameters)
     post = postQueryHelper(post_id)
     del post["dislikes"]
     del post["likes"]
@@ -42,8 +28,9 @@ def createPostHelper(date, thread, message, user, forum, optional):
     return post
 
 def postQueryHelper(id):
+    print "post query helper"
     select = Select('select date, dislikes, forum, id, isApproved, isDeleted, isEdited, isHighlighted, isSpam, likes, message, parent, points, thread, user FROM Posts WHERE id = %s', (id, ))
-    if len(select) == 0:
+    if select == 0:
         return None
     return postFormat(select)
 
@@ -104,6 +91,7 @@ def detailsPostHepler(postid, option):
 
 #3 Очень важно исправить этот запрос для производительности
 def listPostHelper(table, id, related, option):
+    print "in list post helper"
     if table == "user":
         find(table="Users", id="email", value=id)
     if table == "forum":
@@ -123,15 +111,16 @@ def listPostHelper(table, id, related, option):
         select += " LIMIT " + str(option["limit"])
     query = Select(query=select, params=par)
     post_list = []
-    for tmp in query:
-        answer = postFormat2(tmp)
-        if "user" in related:
-            answer["user"] = eUser.detailUserHelper(answer["user"])
-        if "forum" in related:
-            answer["forum"] = eForum.detailForumHelper(short_name=answer["forum"], related=[])
-        if "thread" in related:
-            answer["thread"] = eThread.detailsThreadHelper(thread=answer["thread"], related=[])
-        post_list.append(answer)
+    if query != 0:
+        for tmp in query:
+            answer = postFormat2(tmp)
+            if "user" in related:
+                answer["user"] = eUser.detailUserHelper(answer["user"])
+            if "forum" in related:
+                answer["forum"] = eForum.detailForumHelper(short_name=answer["forum"], related=[])
+            if "thread" in related:
+                answer["thread"] = eThread.detailsThreadHelper(thread=answer["thread"], related=[])
+            post_list.append(answer)
     return post_list
 
 #4

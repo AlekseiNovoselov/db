@@ -26,11 +26,15 @@ def createUser(request):
 #2
 @requireGet
 def detailsUser(request):
+    print "detail user"
     requestData = getParam(request)
+    print requestData
     requiredData = ["user"]
     try:
         if ( tryParam(input=requestData, required=requiredData) == 1):
+            print "error here"
             return generateUncorrect()
+        print "here"
         detailsUser = eUser.detailUserHelper(email=requestData["user"])
     except Exception as e:
         return generateError(e.message)

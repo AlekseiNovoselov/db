@@ -48,9 +48,10 @@ def listUsersForumHelper(short_name, optional):
 
     resultArray = []
     result = Select(select, (short_name, ))
-    for user in result:
-        user = user[0]
-        resultArray.append(eUser.detailUserHelper(user))
+    if result != 0:
+        for user in result:
+            user = user[0]
+            resultArray.append(eUser.detailUserHelper(user))
     return resultArray
 
 

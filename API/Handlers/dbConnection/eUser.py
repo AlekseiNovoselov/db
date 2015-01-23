@@ -39,26 +39,36 @@ def followerListHelper(email, type):
         where = "follower"
     tmp = Select("SELECT " + type + " FROM Followers WHERE " + where + " = %s ", (email, ))
     result = []
-    for el in tmp:
-        result.append(el[0])
+    if tmp != 0:
+        for el in tmp:
+            result.append(el[0])
+    print result
     return result
 
 
 def userInThreadHelper(email):
     s_list = []
     subscriptions = Select('select thread FROM Subscriptions WHERE user = %s', (email, ))
-    for el in subscriptions:
-        s_list.append(el[0])
+    if subscriptions != 0:
+        for el in subscriptions:
+            s_list.append(el[0])
     return s_list
 
 
 def detailUserHelper(email):
+    print "in detail user helper"
     tmp = (Select('select email, about, isAnonymous, id, name, username FROM Users WHERE email = %s', (email, )))
+    print "after select"
+    print tmp
     if len(tmp) == 1:
         user = userFormat(tmp)
+        print user
         user["followers"] = followerListHelper(email, "follower")
+        print "1"
         user["following"] = followerListHelper(email, "followee")
+        print "2"
         user["subscriptions"] = userInThreadHelper(email)
+        print "3"
     else:
         return 1
     return user

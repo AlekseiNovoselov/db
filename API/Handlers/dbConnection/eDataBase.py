@@ -1,9 +1,9 @@
-from API.connection import connect
+from API.connection import db1
 import MySQLdb
 
 def clear(request):
     try:
-        connection = connect()
+        connection = db1.connection
         with connection:
             cursor = connection.cursor()
             cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
@@ -14,7 +14,5 @@ def clear(request):
             cursor.execute("TRUNCATE TABLE Threads")
             cursor.execute("TRUNCATE TABLE Users")
             cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
-            cursor.close()
-        connection.close()
     except MySQLdb.Error:
         raise MySQLdb.Error("Cant drop DataBase")

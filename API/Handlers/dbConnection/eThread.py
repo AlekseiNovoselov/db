@@ -100,13 +100,14 @@ def listThreadHelper(table, id, related, params):
 
     result = Select(query=select, params=parameters)
     threadArray= []
-    for tmp in result:
-        answer = threadFormat2(tmp)
-        if "user" in related:
-            answer["user"] = eUser.detailUserHelper(answer["user"])
-        if "forum" in related:
-            answer["forum"] = eForum.detailForumHelper(short_name=answer["forum"], related=[])
-        threadArray.append(answer)
+    if result != 0:
+        for tmp in result:
+            answer = threadFormat2(tmp)
+            if "user" in related:
+                answer["user"] = eUser.detailUserHelper(answer["user"])
+            if "forum" in related:
+                answer["forum"] = eForum.detailForumHelper(short_name=answer["forum"], related=[])
+            threadArray.append(answer)
     return threadArray
 
 #5
@@ -115,7 +116,7 @@ def listPostsThreadHelper(thread, optional):
 
 #7
 def removeThreadHelper(threadid):
-    find(table="Threads", id="id", value=thread)
+    find(table="Threads", id="id", value=threadid)
     Update("UPDATE Threads SET isDeleted = 1, posts = 0 WHERE id = %s", (threadid, ))
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
     for postId in postsIds:
@@ -127,9 +128,13 @@ def removeThreadHelper(threadid):
 
 #8
 def restoreThreadHelper(threadid):
-    find(table="Threads", id="id", value=thread)
+    find(table="Threads", id="id", value=threadid)
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
-    Update("UPDATE Threads SET isDeleted = 0, posts = %s WHERE id = %s", (len(postsIds), threadid, ))
+    if postsIds == 0:
+        par = 0
+    else:
+        par = len(postsIds)
+    Update("UPDATE Threads SET isDeleted = 0, posts = %s WHERE id = %s", (par, threadid, ))
     for postId in postsIds:
         Update("UPDATE Posts SET isDeleted = 0 WHERE id = %s",(postId, ))
     result = {
