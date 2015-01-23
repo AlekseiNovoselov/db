@@ -5,8 +5,6 @@ from API.Handlers.dbConnection import eForum
 
 #2
 def createThreadHelper(forum, title, isClosed, user, date, message, slug, optional):
-    find(table="Users", id="email", value=user)
-    find(table="Forums", id="short_name", value=forum)
     isDeleted = 0
     if "isDeleted" in optional:
         isDeleted = optional["isDeleted"]
@@ -64,7 +62,6 @@ def threadFormat2(thread):
 
 #3
 def detailsThreadHelper(thread, related):
-    print ("Last correct1")
     select = Select(
         'select date, forum, id, isClosed, isDeleted, message, slug, title, user, dislikes, likes, points, posts '
         'FROM Threads WHERE id = %s', (thread, )
@@ -110,13 +107,8 @@ def listThreadHelper(table, id, related, params):
             threadArray.append(answer)
     return threadArray
 
-#5
-def listPostsThreadHelper(thread, optional):
-    return "Ok"
-
 #7
 def removeThreadHelper(threadid):
-    find(table="Threads", id="id", value=threadid)
     Update("UPDATE Threads SET isDeleted = 1, posts = 0 WHERE id = %s", (threadid, ))
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
     for postId in postsIds:
@@ -128,7 +120,6 @@ def removeThreadHelper(threadid):
 
 #8
 def restoreThreadHelper(threadid):
-    find(table="Threads", id="id", value=threadid)
     postsIds = Select("SELECT id FROM Posts WHERE thread = %s;", (threadid, ))
     if postsIds == 0:
         par = 0
@@ -144,15 +135,12 @@ def restoreThreadHelper(threadid):
 
 #1
 def closeThreadHelper(thread):
-    find(table="Threads", id="id", value=thread)
-    find(table="Threads", id="id", value=thread)
     Update("UPDATE Threads SET isClosed = 1 WHERE id = %s", (thread, ))
     response = { "thread": thread }
     return response
 
 #6
 def openThreadHelper(thread):
-    find(table="Threads", id="id", value=thread)
     Update("UPDATE Threads SET isClosed = 0 WHERE id = %s", (thread, ))
     response = { "thread": thread }
     return response
@@ -160,29 +148,23 @@ def openThreadHelper(thread):
 
 #9
 def subscribeThreadHelper(user, thread):
-    find(table="Threads", id="id", value=thread)
-    find(table="Users", id="email", value=user)
     Update('INSERT INTO Subscriptions (thread, user) VALUES (%s, %s)', (thread, user, ))
     answer = { "thread": thread, "user": user }
     return answer
 
 #10
 def unsubscribeThreadHelper(user, thread):
-    find(table="Threads", id="id", value=thread)
-    find(table="Users", id="email", value=user)
     Update('DELETE FROM Subscriptions WHERE user = %s AND thread = %s', (user, thread, ))
     answer = { "thread": thread, "user": user }
     return answer
 
 #11
 def updateThreadHelper(thread, slug, message):
-    find(table="Threads", id="id", value=thread)
     Update('UPDATE Threads SET slug = %s, message = %s WHERE id = %s', (slug, message, thread, ))
     return detailsThreadHelper(thread=thread, related=[])
 
 #12
 def voteThreadHelper(thread, value):
-    find(table="Threads", id="id", value=thread)
     if value == -1:
         Update("UPDATE Threads SET dislikes=dislikes+1, points=points-1 where id = %s", (thread, ))
     else:

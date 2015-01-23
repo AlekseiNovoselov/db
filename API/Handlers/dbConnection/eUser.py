@@ -56,9 +56,7 @@ def userInThreadHelper(email):
 
 
 def detailUserHelper(email):
-    print "in detail user helper"
     tmp = (Select('select email, about, isAnonymous, id, name, username FROM Users WHERE email = %s', (email, )))
-    print "after select"
     print tmp
     if len(tmp) == 1:
         user = userFormat(tmp)
@@ -113,8 +111,6 @@ def listFollowersUserHelper(email, fol1, optional):
 
 #3
 def followUserHelper(email1, email2):
-    find(table="Users", id="email", value=email1)
-    find(table="Users", id="email", value=email2)
     Update('INSERT INTO Followers (follower, followee) VALUES (%s, %s)', (email1, email2, ))
     return detailUserHelper(email1)
 
@@ -127,7 +123,6 @@ def unfollowUserHelper(email1, email2):
 
 #8
 def updateUserProfileHelper(email, about, name):
-    find(table="Users", id="email", value=email)
     Update('UPDATE Users SET email = %s, about = %s, name = %s WHERE email = %s',
            (email, about, name, email, ))
     return detailUserHelper(email)
