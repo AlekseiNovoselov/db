@@ -4,7 +4,6 @@ from API.Handlers.dbConnection import eForum, eUser, eThread
 
 #1
 def createPostHelper(date, thread, message, user, forum, optional):
-    print "after find"
     query = "INSERT INTO Posts (message, user, forum, thread, date"
     values = "(%s, %s, %s, %s, %s"
     parameters = [message, user, forum, thread, date]

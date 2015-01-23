@@ -57,16 +57,11 @@ def userInThreadHelper(email):
 
 def detailUserHelper(email):
     tmp = (Select('select email, about, isAnonymous, id, name, username FROM Users WHERE email = %s', (email, )))
-    print tmp
     if len(tmp) == 1:
         user = userFormat(tmp)
-        print user
         user["followers"] = followerListHelper(email, "follower")
-        print "1"
         user["following"] = followerListHelper(email, "followee")
-        print "2"
         user["subscriptions"] = userInThreadHelper(email)
-        print "3"
     else:
         return 1
     return user
@@ -74,7 +69,6 @@ def detailUserHelper(email):
 
 #4
 def listFollowersUserHelper(email, fol1, optional):
-    find(table="Users", id="email", value=email)
     if fol1 == "followee":
         fol2 = "follower"
     else:

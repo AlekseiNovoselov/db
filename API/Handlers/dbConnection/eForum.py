@@ -33,8 +33,8 @@ def detailForumHelper(short_name, related):
 
 #5
 def listUsersForumHelper(short_name, optional):
-    select = "SELECT distinct email FROM Users JOIN Posts ON Posts.user = Users.email " \
-             " JOIN Forums on Forums.short_name = Posts.forum WHERE Posts.forum = %s "
+    select = "SELECT distinct Users.email, Users.about, Users.isAnonymous, Users.id, Users.name, Users.username FROM Users " \
+             "where Users.email IN (Select DISTINCT user from Posts where forum = %s )"
     if "since_id" in optional:
         select += " AND Users.id >= " + str(optional["since_id"])
     if "order" in optional:
@@ -47,9 +47,19 @@ def listUsersForumHelper(short_name, optional):
     resultArray = []
     result = Select(select, (short_name, ))
     if result != 0:
-        for user in result:
-            user = user[0]
-            resultArray.append(eUser.detailUserHelper(user))
+        for tmp in result:
+            user = {
+                'about': tmp[1],
+                'email': tmp[0],
+                'id': tmp[3],
+                'isAnonymous': tmp[2],
+                'name': tmp[4],
+                'username': tmp[5],
+                "followers": eUser.followerListHelper(tmp[0], "follower"),
+                "following": eUser.followerListHelper(tmp[0], "followee"),
+                "subscriptions": eUser.userInThreadHelper(tmp[0])
+            }
+            resultArray.append(user)
     return resultArray
 
 
