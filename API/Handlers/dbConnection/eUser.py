@@ -66,7 +66,7 @@ def detailUserHelper(email):
 
 #4
 def listFollowersUserHelper(email, fol1, optional):
-
+    find(table="Users", id="email", value=email)
     if fol1 == "followee":
         fol2 = "follower"
     else:
@@ -103,6 +103,8 @@ def listFollowersUserHelper(email, fol1, optional):
 
 #3
 def followUserHelper(email1, email2):
+    find(table="Users", id="email", value=email1)
+    find(table="Users", id="email", value=email2)
     Update('INSERT INTO Followers (follower, followee) VALUES (%s, %s)', (email1, email2, ))
     return detailUserHelper(email1)
 
@@ -115,6 +117,7 @@ def unfollowUserHelper(email1, email2):
 
 #8
 def updateUserProfileHelper(email, about, name):
+    find(table="Users", id="email", value=email)
     Update('UPDATE Users SET email = %s, about = %s, name = %s WHERE email = %s',
            (email, about, name, email, ))
     return detailUserHelper(email)

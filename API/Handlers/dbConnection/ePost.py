@@ -5,6 +5,9 @@ from API.Handlers.dbConnection import eForum, eUser, eThread
 
 #1
 def createPostHelper(date, thread, message, user, forum, optional):
+    find(table="Threads", id="id", value=thread)
+    find(table="Forums", id="short_name", value=forum)
+    find(table="Users", id="email", value=user)
     query = "INSERT INTO Posts (message, user, forum, thread, date"
     values = "(%s, %s, %s, %s, %s"
     parameters = [message, user, forum, thread, date]
@@ -101,6 +104,12 @@ def detailsPostHepler(postid, option):
 
 #3 Очень важно исправить этот запрос для производительности
 def listPostHelper(table, id, related, option):
+    if table == "user":
+        find(table="Users", id="email", value=id)
+    if table == "forum":
+        find(table="Forums", id="short_name", value=id)
+    if table == "thread":
+        find(table="Threads", id="id", value=id)
     select = "SELECT date, dislikes, forum, id, isApproved, isDeleted, isEdited, isHighlighted, isSpam, likes, message, parent, points, thread, user FROM Posts WHERE " + table + " = %s "
     par = [id]
     if "since" in option:
@@ -127,23 +136,27 @@ def listPostHelper(table, id, related, option):
 
 #4
 def removePostHelper(postid):
+    find(table="Posts", id="id", value=postid)
     Update("UPDATE Threads SET posts = posts - 1 WHERE id = (SELECT thread FROM Posts WHERE id = %s)", (postid, ))
     Update("UPDATE Posts SET isDeleted = true WHERE Posts.id = %s", (postid, ))
     return { "post": postid }
 
 #5
 def restorePostHelper(postid):
+    find(table="Posts", id="id", value=postid)
     Update("UPDATE Threads SET posts = posts + 1 WHERE id = (SELECT thread FROM Posts WHERE id = %s)", (postid, ))
     Update("UPDATE Posts SET isDeleted = false WHERE Posts.id = %s", (postid, ))
     return { "post": postid }
 
 #6
 def updatePostHelper(id, message):
+    find(table="Posts", id="id", value=id)
     Update('UPDATE Posts SET message = %s WHERE id = %s', (message, id, ))
     return detailsPostHepler(postid=id, option=[])
 
 #7
 def votePostHelper(id, vote):
+    find(table="Posts", id="id", value=id)
     if vote == -1:
         Update("UPDATE Posts SET dislikes=dislikes+1, points=points-1 where id = %s", (id, ))
     else:
